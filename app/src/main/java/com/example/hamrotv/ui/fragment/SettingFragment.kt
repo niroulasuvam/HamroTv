@@ -73,16 +73,7 @@ class SettingFragment : Fragment() {
         }
 
         // Toggle settings dropdown and show/hide switch
-        binding.settings.setOnClickListener {
-            if (binding.settingsDropdown.visibility == View.GONE) {
-                binding.settingsDropdown.visibility = View.VISIBLE
 
-                binding.editProfileDropdown.visibility = View.GONE
-            } else {
-                binding.settingsDropdown.visibility = View.GONE
-
-            }
-        }
 
         // Save updated profile
         binding.btnSaveProfile.setOnClickListener {

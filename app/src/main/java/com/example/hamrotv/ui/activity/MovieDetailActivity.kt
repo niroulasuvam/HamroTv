@@ -5,10 +5,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.hamrotv.databinding.ActivityMovieDetailBinding
 import com.example.hamrotv.model.MovieModel
+import com.google.android.material.chip.Chip
 import com.squareup.picasso.Picasso
 
 class MovieDetailActivity : AppCompatActivity() {
@@ -46,15 +48,41 @@ class MovieDetailActivity : AppCompatActivity() {
         )
 
         // Set data to UI with null safety
-        binding.movieName.text = movie.MovieName ?: "Unnamed Movie"
-        binding.movieRating.text = "Rating: ${movie.Rating ?: 0}"
-        binding.movieDescription.text = movie.description ?: "No description available"
+        binding.apply {
+            movieName.text = movie.MovieName.ifEmpty { "Unnamed Movie" }
+            movieRating.text = "Rating: ${movie.Rating ?: 0}"
+            releaseYear.text = movie.releaseYear?.toString() ?: "N/A"
+            duration.text = movie.duration.ifEmpty { "N/A" }
+            ageRating.text = movie.ageRating.ifEmpty { "N/A" }
+            movieDescription.text = movie.description.ifEmpty { "No description available" }
 
-        if (!movie.imageUrl.isNullOrEmpty()) {
-            Picasso.get().load(movie.imageUrl).into(binding.movieImage)
-        } else {
-            binding.movieImage.setImageResource(android.R.drawable.ic_menu_gallery) // Fallback image
+            // Handle Genres
+            genreChips.removeAllViews()
+            movie.genres?.takeIf { it.isNotEmpty() }?.forEach { genre ->
+                val chip = Chip(root.context).apply {
+                    text = genre
+                    isCloseIconVisible = false
+                }
+                genreChips.addView(chip)
+            } ?: run {
+                val chip = Chip(root.context).apply {
+                    text = "No genres available"
+                    isCloseIconVisible = false
+                }
+                genreChips.addView(chip)
+            }
+
+            // Load Image with Picasso
+            if (!movie.imageUrl.isNullOrEmpty()) {
+                Picasso.get().load(movie.imageUrl)
+                    .placeholder(android.R.drawable.ic_menu_gallery) // While loading
+                    .error(android.R.drawable.ic_menu_report_image) // If loading fails
+                    .into(movieImage)
+            } else {
+                movieImage.setImageResource(android.R.drawable.ic_menu_gallery) // Fallback
+            }
         }
+
 
         // Optional: Uncomment and adjust if you need a button action
         /*

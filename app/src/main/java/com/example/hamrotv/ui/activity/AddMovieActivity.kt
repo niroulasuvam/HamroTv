@@ -86,8 +86,12 @@ class AddMovieActivity : AppCompatActivity() {
 
     private fun addProduct(url: String) {
         val productName = binding.editProductName.text.toString()
-        val productPrice = binding.editProductPrice.text.toString().toIntOrNull() ?: 0
+        val productPrice = binding.editProductPrice.text.toString().toFloatOrNull() ?: 0.0f
         val productDesc = binding.editProductDesc.text.toString()
+        val trailerUrl = binding.editTrailerUrl.text.toString()
+        val  duration  = binding.editMovieDuration.text.toString()
+        val ageRating = binding.editAgeRating.text.toString()
+        val releaseyear = binding.editMovieYear.text.toString()
 
         if (productName.isNotBlank() && productPrice > 0 && productDesc.isNotBlank()) {
             val model = MovieModel( // Fixed spacing typo
@@ -95,6 +99,10 @@ class AddMovieActivity : AppCompatActivity() {
                 MovieName = productName,
                 description = productDesc,
                 Rating = productPrice,
+                trailerUrl = trailerUrl,
+                duration = duration,
+                ageRating = ageRating,
+                releaseYear = releaseyear,
                 imageUrl = url
             )
 

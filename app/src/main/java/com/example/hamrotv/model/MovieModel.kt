@@ -5,40 +5,57 @@ import android.os.Parcelable
 
 data class MovieModel(
     var MovieId: String = "",
-    var MovieName : String = "",
+    var MovieName: String = "",
     var description: String = "",
-    var Rating: Int =0,
-    var imageUrl: String = ""
+    var movielink: String = "",
+    var Rating: Float = 0f,  // Changed to Float for decimal ratings
+    var imageUrl: String = "",
+    // New fields
+    var releaseYear: String = "",
+    var duration: String = "",
+    var ageRating: String = "",
+    var genres: List<String> = listOf(),
+    var trailerUrl: String = ""
 ): Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readInt(),
         parcel.readString() ?: "",
-    ) {
-    }
+        parcel.readFloat(),
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.readString() ?: "",
+        parcel.createStringArrayList() ?: listOf(),
+        parcel.readString() ?: ""
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(MovieId)
         parcel.writeString(MovieName)
         parcel.writeString(description)
-        parcel.writeInt(Rating)
+        parcel.writeString(movielink)
+        parcel.writeFloat(Rating)
         parcel.writeString(imageUrl)
+        parcel.writeString(releaseYear)
+        parcel.writeString(duration)
+        parcel.writeString(ageRating)
+        parcel.writeStringList(genres)
+        parcel.writeString(trailerUrl)
     }
 
     override fun describeContents(): Int {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<MovieModel> {  // Changed to ExerciseModel
-        override fun createFromParcel(parcel: Parcel): MovieModel {  // Changed return type
-            return MovieModel(parcel)  // Changed constructor call
+    companion object CREATOR : Parcelable.Creator<MovieModel> {
+        override fun createFromParcel(parcel: Parcel): MovieModel {
+            return MovieModel(parcel)
         }
 
-        override fun newArray(size: Int): Array<MovieModel?> {  // Changed return type
+        override fun newArray(size: Int): Array<MovieModel?> {
             return arrayOfNulls(size)
         }
     }
 }
-

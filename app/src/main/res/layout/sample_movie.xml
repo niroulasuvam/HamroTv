@@ -21,9 +21,8 @@
 
             <ImageView
                 android:id="@+id/getImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginEnd="16dp"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
                 android:src="@drawable/placeholder"
                 android:scaleType="centerCrop"
                 android:background="@android:color/darker_gray"
@@ -36,13 +35,26 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
                 android:text="Movie name"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toEndOf="@+id/getImage"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Added release year and duration -->
+            <TextView
+                android:id="@+id/displayReleaseInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:text="2023 | 2h 15m"
+                android:textSize="14sp"
+                android:textColor="#E0E0E0"
+                app:layout_constraintStart_toEndOf="@+id/getImage"
+                app:layout_constraintTop_toBottomOf="@+id/displayname"
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
@@ -57,34 +69,55 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 app:layout_constraintStart_toEndOf="@+id/getImage"
-                app:layout_constraintTop_toBottomOf="@+id/displayname"
+                app:layout_constraintTop_toBottomOf="@+id/displayReleaseInfo"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
-                android:id="@+id/displaySets"
+            <!-- Rating with star icon -->
+            <LinearLayout
+                android:id="@+id/ratingContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toEndOf="@+id/getImage"
+                app:layout_constraintTop_toBottomOf="@+id/displayDesc">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@android:drawable/btn_star_big_on"
+                    android:tint="#FFA500" />
+
+                <TextView
+                    android:id="@+id/displaySets"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="8.5"
+                    android:textSize="14sp"
+                    android:textColor="#FFA500" />
+            </LinearLayout>
+
+            <!-- Added genre chips -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/genreChips"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Movie Rating"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray"
                 app:layout_constraintStart_toEndOf="@+id/getImage"
-                app:layout_constraintTop_toBottomOf="@+id/displayDesc"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/ratingContainer">
 
-            <TextView
-                android:id="@+id/btnEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Edit"
-                android:textSize="14sp"
-                android:textColor="@android:color/holo_blue_dark"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@+id/displaySets"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Action"
+                    android:textSize="12sp"
+                    app:chipBackgroundColor="#4D000000"
+                    app:chipMinHeight="24dp" />
+            </com.google.android.material.chip.ChipGroup>
 
             <ProgressBar
                 android:id="@+id/progressBar2"

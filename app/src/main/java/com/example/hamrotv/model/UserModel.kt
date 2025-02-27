@@ -28,6 +28,7 @@ data class UserModel(
         parcel.writeString(fName)
         parcel.writeString(address)
         parcel.writeString(phoneNumber)
+        parcel.writeString(imageUrl)
     }
 
     override fun describeContents(): Int {

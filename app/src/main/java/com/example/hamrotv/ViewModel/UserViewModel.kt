@@ -1,5 +1,7 @@
 package com.example.hamrotv.ViewModel
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import com.example.hamrotv.model.UserModel
 import com.example.hamrotv.repository.UserRepository
@@ -51,4 +53,22 @@ fun editProfile(userId: String,data:MutableMap<String,Any>,
                 callback: (Boolean, String) -> Unit){
     repo.editProfile(userId, data, callback)
 }
+
+
+fun uploadImage(context: Context, imageUri: Uri, callback: (String?) -> Unit) {
+    if (imageUri == null) {
+        callback("Image URI is null")
+        return
+    }
+
+    // Handle the image upload logic here
+    repo.uploadImage(context, imageUri) { url ->
+        if (url != null) {
+            callback(url)  // Successfully uploaded image
+        } else {
+            callback("Failed to upload image")
+        }
+    }
+}
+
 }

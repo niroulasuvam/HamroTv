@@ -27,7 +27,6 @@ class MovieAdapter(
         val cardView: CardView = itemView.findViewById(R.id.cardWorkout)
         val imageView: ImageView = itemView.findViewById(R.id.getImage)
         val loading: ProgressBar = itemView.findViewById(R.id.progressBar2)
-        val btnEdit: TextView = itemView.findViewById(R.id.btnEdit)
         val productName: TextView = itemView.findViewById(R.id.displayname)
         val productPrice: TextView = itemView.findViewById(R.id.displaySets)
         val productDesc: TextView = itemView.findViewById(R.id.displayDesc)

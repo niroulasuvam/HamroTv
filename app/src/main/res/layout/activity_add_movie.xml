@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.activity.AddMovieActivity">
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="20dp"
+        android:layout_height="25dp"
+        android:layout_gravity="start"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:srcCompat="@drawable/backarrow"
+        />
+    <ImageView
+        android:layout_gravity="center"
+        android:id="@+id/imageBrowse"
+        android:src="@drawable/placeholder"
+        android:layout_width="150dp"
+        android:layout_height="150dp"/>
+    <EditText
+        android:hint="Enter Workout name"
+        android:id="@+id/editProductName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:hint="Enter Workout sets"
+        android:id="@+id/editProductPrice"
+        android:inputType="numberDecimal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:hint="Enter Workout description"
+        android:id="@+id/editProductDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+
+
+
+
+    <Button
+        android:id="@+id/btnAddProduct"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Add product" />
+</LinearLayout>

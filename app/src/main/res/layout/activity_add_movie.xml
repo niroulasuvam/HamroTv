@@ -23,20 +23,20 @@
         android:layout_width="150dp"
         android:layout_height="150dp"/>
     <EditText
-        android:hint="Enter Workout name"
+        android:hint="Enter Movie name"
         android:id="@+id/editProductName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <EditText
-        android:hint="Enter Workout sets"
+        android:hint="Enter Movie Rating"
         android:id="@+id/editProductPrice"
         android:inputType="numberDecimal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <EditText
-        android:hint="Enter Workout description"
+        android:hint="Enter Movie description"
         android:id="@+id/editProductDesc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
@@ -51,5 +51,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Add product" />
+        android:text="Add Movie" />
 </LinearLayout>

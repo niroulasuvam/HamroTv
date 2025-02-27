@@ -13,8 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="4dp"
-        app:cardBackgroundColor="@android:color/white">
-
+        app:cardBackgroundColor="@color/LightPurple">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:padding="16dp"
             android:layout_width="match_parent"
@@ -41,7 +40,7 @@
                 android:text="Movie name"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 app:layout_constraintStart_toEndOf="@+id/getImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -54,7 +53,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Movie description"
                 android:textSize="14sp"
-                android:textColor="@android:color/black"
+                android:textColor="@android:color/white"
                 android:maxLines="2"
                 android:ellipsize="end"
                 app:layout_constraintStart_toEndOf="@+id/getImage"

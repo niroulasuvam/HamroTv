@@ -1,6 +1,5 @@
 package com.example.hamrotv.ui.activity
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -40,7 +39,6 @@ class NavigationActivity : AppCompatActivity() {
             when(menu.itemId){
                 R.id.nav_home ->replaceFragment(MovieDashboardFragment())
                 R.id.nav_settings -> replaceFragment(SettingFragment())
-//                R.id.nav_ -> replaceFragment(WorkoutDashboardFragment())
 
                 else -> {}
             }

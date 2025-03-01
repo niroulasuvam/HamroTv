@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.activity.AddMovieActivity">
 
     <LinearLayout
@@ -53,7 +54,9 @@
                 android:id="@+id/editProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text" />
+                android:inputType="text"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -67,10 +70,11 @@
                 android:id="@+id/editProductPrice"
                 android:inputType="numberDecimal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- New fields based on movie detail layout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +93,9 @@
                     android:id="@+id/editMovieYear"
                     android:inputType="number"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -104,7 +110,9 @@
                     android:id="@+id/editMovieDuration"
                     android:inputType="text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/darker_gray" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -119,7 +127,9 @@
                 android:id="@+id/editAgeRating"
                 android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -140,7 +150,9 @@
                 android:id="@+id/editGenres"
                 android:inputType="text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -156,7 +168,9 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:minLines="4"
-                android:gravity="top|start" />
+                android:gravity="top|start"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -170,7 +184,9 @@
                 android:id="@+id/editTrailerUrl"
                 android:inputType="textUri"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textColorHint="@android:color/darker_gray" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

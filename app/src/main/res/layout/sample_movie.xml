@@ -84,11 +84,6 @@
                 app:layout_constraintStart_toEndOf="@+id/getImage"
                 app:layout_constraintTop_toBottomOf="@+id/displayDesc">
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@android:drawable/btn_star_big_on"
-                    android:tint="#FFA500" />
 
                 <TextView
                     android:id="@+id/displaySets"
@@ -98,26 +93,19 @@
                     android:text="8.5"
                     android:textSize="14sp"
                     android:textColor="#FFA500" />
+
             </LinearLayout>
 
-            <!-- Added genre chips -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/genreChips"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintStart_toEndOf="@+id/getImage"
-                app:layout_constraintTop_toBottomOf="@+id/ratingContainer">
 
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Action"
-                    android:textSize="12sp"
-                    app:chipBackgroundColor="#4D000000"
-                    app:chipMinHeight="24dp" />
-            </com.google.android.material.chip.ChipGroup>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Action"
+                android:textSize="12sp"
+                app:chipBackgroundColor="#4D000000"
+                app:chipMinHeight="24dp"
+                tools:layout_editor_absoluteX="136dp"
+                tools:layout_editor_absoluteY="75dp" />
 
             <ProgressBar
                 android:id="@+id/progressBar2"

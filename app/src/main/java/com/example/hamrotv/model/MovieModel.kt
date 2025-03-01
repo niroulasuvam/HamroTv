@@ -14,7 +14,7 @@ data class MovieModel(
     var releaseYear: String = "",
     var duration: String = "",
     var ageRating: String = "",
-    var genres: List<String> = listOf(),
+    var genres: String = "",
     var trailerUrl: String = ""
 ): Parcelable {
     constructor(parcel: Parcel) : this(
@@ -27,7 +27,7 @@ data class MovieModel(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.createStringArrayList() ?: listOf(),
+        parcel.readString() ?: "",
         parcel.readString() ?: ""
     )
 
@@ -41,7 +41,7 @@ data class MovieModel(
         parcel.writeString(releaseYear)
         parcel.writeString(duration)
         parcel.writeString(ageRating)
-        parcel.writeStringList(genres)
+        parcel.writeString(genres)
         parcel.writeString(trailerUrl)
     }
 

@@ -1,14 +1,33 @@
 {
   "project_info": {
-    "project_number": "204559191128",
-    "firebase_url": "https://hamrotv-c13d5-default-rtdb.firebaseio.com",
-    "project_id": "hamrotv-c13d5",
-    "storage_bucket": "hamrotv-c13d5.firebasestorage.app"
+    "project_number": "550974144768",
+    "firebase_url": "https://hamrotv-5bedf-default-rtdb.firebaseio.com",
+    "project_id": "hamrotv-5bedf",
+    "storage_bucket": "hamrotv-5bedf.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:204559191128:android:c0b3de034ad970fb9e8e2d",
+        "mobilesdk_app_id": "1:550974144768:android:8e9f89f2e45ec2073b33e5",
+        "android_client_info": {
+          "package_name": "com.example.HamroTV"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwwBNcJO6taGL1lD8pyoFNrCD9aUk5_q8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550974144768:android:0846b837f7555e3b3b33e5",
         "android_client_info": {
           "package_name": "com.example.hamrotv"
         }
@@ -16,7 +35,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC6HXQT5VtDa1YOjs654DrFLuywGU8Ld7E"
+          "current_key": "AIzaSyBwwBNcJO6taGL1lD8pyoFNrCD9aUk5_q8"
         }
       ],
       "services": {

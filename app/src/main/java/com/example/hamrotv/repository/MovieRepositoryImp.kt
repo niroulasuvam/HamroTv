@@ -1,194 +1,140 @@
 package com.example.hamrotv.repository
 
-import android.content.Context
-import android.database.Cursor
-import android.graphics.Movie
-import android.net.Uri
-import android.os.Handler
-import android.os.Looper
-import android.provider.OpenableColumns
 import android.util.Log
-import com.cloudinary.Cloudinary
-import com.cloudinary.utils.ObjectUtils
 import com.example.hamrotv.model.MovieModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import java.io.InputStream
-import java.util.concurrent.Executors
+import com.google.firebase.database.*
 
-class MovieRepositoryImp: MovieRepository {
+class MovieRepositoryImp {
+    private val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+    private val moviesRef: DatabaseReference = database.child("movies")
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    var auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val ref: DatabaseReference = database.reference
-        .child("exercises")
-    override fun addMovie(MovieModel: MovieModel, callback: (Boolean, String) -> Unit) {
-        var id = ref.push().key.toString()
-        MovieModel.MovieId = id
-        Log.d("Firebase", "Adding exercise: $MovieModel")
+    // Add a new movie
+    fun addMovie(movie: MovieModel, callback: (Boolean, String) -> Unit) {
+        // Generate unique ID for the movie
+        val movieId = moviesRef.push().key ?: return callback(false, "Failed to generate movie ID")
 
-        ref.child(id).setValue(MovieModel).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d("Firebase", "Exercise added successfully")
-                callback(true, "Exercise added successfully")
-            } else {
-                Log.e("Firebase", "Failed to add exercise", task.exception)
-                callback(false, task.exception?.message ?: "Unknown error")
+        // Set the movie ID
+        movie.MovieId = movieId
+
+        Log.d("MovieRepository", "Adding movie: ${movie.MovieName} with ID: $movieId")
+
+        moviesRef.child(movieId).setValue(movie)
+            .addOnSuccessListener {
+                Log.d("MovieRepository", "Movie added successfully: ${movie.MovieName}")
+                callback(true, "Movie added successfully")
             }
-        }
+            .addOnFailureListener { exception ->
+                Log.e("MovieRepository", "Failed to add movie: ${exception.message}")
+                callback(false, "Failed to add movie: ${exception.message}")
+            }
     }
 
-    override fun updateMovie(
-        MovieId: String,
-        data: MutableMap<String, Any>,
-        callback: (Boolean, String) -> Unit
-    ) {
-        ref.child(MovieId).updateChildren(data).addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Product updated successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
+    // Get all movies
+    fun getAllMovie(callback: (List<MovieModel>?, Boolean, String) -> Unit) {
+        Log.d("MovieRepository", "Fetching all movies from Firebase...")
 
-            }
-        }
-    }
-    override fun deleteMovie(MovieId: String, callback: (Boolean, String) -> Unit) {
-        ref.child(MovieId).removeValue().addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Product deleted successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
-            }
-        }
-    }
+        moviesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val movieList = mutableListOf<MovieModel>()
 
-    override fun getMovieFromDatabase(
-        MovieId: String,
-        callback: (List<MovieModel>?, Boolean, String) -> Unit
-    ) {
-        ref.orderByChild("productName").equalTo(MovieId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val exercises = mutableListOf<MovieModel>()
-                    for (data in snapshot.children) {
-                        val exercise = data.getValue(MovieModel::class.java)
-                        if (exercise != null) {
-                            Log.d("checkpoint","i am here")
-                            Log.d("checkpoint",exercise.MovieName)
-                            exercises.add(exercise)
+                Log.d("MovieRepository", "Firebase snapshot exists: ${snapshot.exists()}")
+                Log.d("MovieRepository", "Number of children: ${snapshot.childrenCount}")
+
+                for (movieSnapshot in snapshot.children) {
+                    try {
+                        val movie = movieSnapshot.getValue(MovieModel::class.java)
+                        if (movie != null) {
+                            // Ensure the movie has an ID
+                            if (movie.MovieId.isEmpty()) {
+                                movie.MovieId = movieSnapshot.key ?: ""
+                            }
+                            movieList.add(movie)
+                            Log.d("MovieRepository", "Loaded movie: ${movie.MovieName}")
                         }
+                    } catch (e: Exception) {
+                        Log.e("MovieRepository", "Error parsing movie data: ${e.message}")
                     }
-                    if (exercises.isNotEmpty()) {
-                        callback(exercises, true, "Exercises fetched successfully")
+                }
+
+                Log.d("MovieRepository", "Total movies loaded: ${movieList.size}")
+                callback(movieList, true, "Movies loaded successfully")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("MovieRepository", "Failed to load movies: ${error.message}")
+                callback(null, false, "Failed to load movies: ${error.message}")
+            }
+        })
+    }
+
+    // Update a movie
+    fun updateMovie(movie: MovieModel, callback: (Boolean, String) -> Unit) {
+        if (movie.MovieId.isEmpty()) {
+            callback(false, "Movie ID is required for update")
+            return
+        }
+
+        Log.d("MovieRepository", "Updating movie: ${movie.MovieName}")
+
+        moviesRef.child(movie.MovieId).setValue(movie)
+            .addOnSuccessListener {
+                Log.d("MovieRepository", "Movie updated successfully")
+                callback(true, "Movie updated successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("MovieRepository", "Failed to update movie: ${exception.message}")
+                callback(false, "Failed to update movie: ${exception.message}")
+            }
+    }
+
+    // Delete a movie
+    fun deleteMovie(movieId: String, callback: (Boolean, String) -> Unit) {
+        if (movieId.isEmpty()) {
+            callback(false, "Movie ID is required for deletion")
+            return
+        }
+
+        Log.d("MovieRepository", "Deleting movie with ID: $movieId")
+
+        moviesRef.child(movieId).removeValue()
+            .addOnSuccessListener {
+                Log.d("MovieRepository", "Movie deleted successfully")
+                callback(true, "Movie deleted successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e("MovieRepository", "Failed to delete movie: ${exception.message}")
+                callback(false, "Failed to delete movie: ${exception.message}")
+            }
+    }
+
+    // Get a single movie by ID
+    fun getMovieById(movieId: String, callback: (MovieModel?, Boolean, String) -> Unit) {
+        Log.d("MovieRepository", "Fetching movie with ID: $movieId")
+
+        moviesRef.child(movieId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                try {
+                    val movie = snapshot.getValue(MovieModel::class.java)
+                    if (movie != null) {
+                        movie.MovieId = snapshot.key ?: movieId
+                        Log.d("MovieRepository", "Movie found: ${movie.MovieName}")
+                        callback(movie, true, "Movie found")
                     } else {
-                        callback(emptyList(), true, "No exercises found for the given productId")
+                        Log.d("MovieRepository", "Movie not found")
+                        callback(null, false, "Movie not found")
                     }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    callback(null, false, error.message)
-                }
-            })
-    }
-
-    override fun geMoviebyId(MovieId: String, callback: (MovieModel?, Boolean, String) -> Unit) {
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    var Movie = mutableListOf<MovieModel>()
-                    for (eachData in snapshot.children) {
-                        var model = eachData.getValue(MovieModel::class.java)
-                        if (model != null) {
-                            Movie.add(model)
-                        }
-                    }
-
+                } catch (e: Exception) {
+                    Log.e("MovieRepository", "Error parsing movie: ${e.message}")
+                    callback(null, false, "Error parsing movie: ${e.message}")
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                callback(null, false, error.message)
+                Log.e("MovieRepository", "Failed to fetch movie: ${error.message}")
+                callback(null, false, "Failed to fetch movie: ${error.message}")
             }
         })
-    }
-    override fun getAllMovie(callback: (List<MovieModel>?, Boolean, String) -> Unit) {
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    var products = mutableListOf<MovieModel>()
-                    for (eachData in snapshot.children) {
-                        var model = eachData.getValue(MovieModel::class.java)
-                        if (model != null) {
-                            products.add(model)
-                        }
-                    }
-
-                    callback(products, true, "Product fetched")
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                callback(null, false, error.message)
-            }
-        })
-    }
-
-
-    private val cloudinary = Cloudinary(
-        mapOf(
-            "cloud_name" to "dkscpr3wa",
-            "api_key" to "776537619471962",
-            "api_secret" to "S_YN8k3Ne5Vlnc96hsQ5bAnOPik"
-        )
-    )
-    override fun uploadImage(context: Context, imageUri: Uri, callback: (String?) -> Unit) {
-        val executor = Executors.newSingleThreadExecutor()
-        executor.execute {
-            try {
-                val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
-                var fileName = getFileNameFromUri(context, imageUri)
-
-                fileName = fileName?.substringBeforeLast(".") ?: "uploaded_image"
-
-                val response = cloudinary.uploader().upload(
-                    inputStream, ObjectUtils.asMap(
-                        "public_id", fileName,
-                        "resource_type", "image"
-                    )
-                )
-
-                var imageUrl = response["url"] as String?
-
-                imageUrl = imageUrl?.replace("http://", "https://")
-
-                Handler(Looper.getMainLooper()).post {
-                    callback(imageUrl)
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Handler(Looper.getMainLooper()).post {
-                    callback(null)
-                }
-            }
-        }
-    }
-
-    override fun getFileNameFromUri(context: Context, uri: Uri): String? {
-        var fileName: String? = null
-        val cursor: Cursor? = context.contentResolver.query(uri, null, null, null, null)
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex != -1) {
-                    fileName = it.getString(nameIndex)
-                }
-            }
-        }
-        return fileName
     }
 }

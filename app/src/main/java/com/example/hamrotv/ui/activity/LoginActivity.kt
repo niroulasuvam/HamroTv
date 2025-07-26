@@ -13,11 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,17 +31,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hamrotv.ui.theme.HamroTVTheme
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
-class RegisterActivity : ComponentActivity() {
+class LoginActiivty : ComponentActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var database: FirebaseDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         firebaseAuth = FirebaseAuth.getInstance()
-        database = FirebaseDatabase.getInstance()
 
         setContent {
             HamroTVTheme {
@@ -52,17 +46,17 @@ class RegisterActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RegisterScreen(
-                        onRegistrationSuccess = {
-                            val intent = Intent(this@RegisterActivity, LoginActiivty::class.java)
+                    LoginScreen(
+                        onLoginSuccess = {
+                            val intent = Intent(this@LoginActiivty, NavigationActivity::class.java)
                             startActivity(intent)
                             finish()
                         },
-                        onNavigateToLogin = {
-                            finish()
+                        onNavigateToRegister = {
+                            val intent = Intent(this@LoginActiivty, RegisterActivity::class.java)
+                            startActivity(intent)
                         },
-                        firebaseAuth = firebaseAuth,
-                        database = database
+                        firebaseAuth = firebaseAuth
                     )
                 }
             }
@@ -72,17 +66,13 @@ class RegisterActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(
-    onRegistrationSuccess: () -> Unit,
-    onNavigateToLogin: () -> Unit,
-    firebaseAuth: FirebaseAuth,
-    database: FirebaseDatabase
+fun LoginScreen(
+    onLoginSuccess: () -> Unit,
+    onNavigateToRegister: () -> Unit,
+    firebaseAuth: FirebaseAuth
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
-    var fullName by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -94,9 +84,9 @@ fun RegisterScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f),
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         MaterialTheme.colorScheme.background,
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f)
                     )
                 )
             )
@@ -109,11 +99,11 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header Section
+            // App Logo/Title Section
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp),
+                    .padding(bottom = 32.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 shape = RoundedCornerShape(20.dp)
             ) {
@@ -123,27 +113,27 @@ fun RegisterScreen(
                         .background(
                             Brush.horizontalGradient(
                                 colors = listOf(
-                                    MaterialTheme.colorScheme.secondary,
-                                    MaterialTheme.colorScheme.primary
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.secondary
                                 )
                             )
                         )
-                        .padding(24.dp),
+                        .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "🎯",
-                        fontSize = 40.sp,
+                        text = "🎬",
+                        fontSize = 48.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = "Join HamroTV",
-                        fontSize = 28.sp,
+                        text = "HamroTV",
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Text(
-                        text = "Create your account and start exploring",
+                        text = "Your Movie Experience Starts Here",
                         fontSize = 14.sp,
                         color = Color.White.copy(alpha = 0.9f),
                         textAlign = TextAlign.Center
@@ -151,7 +141,7 @@ fun RegisterScreen(
                 }
             }
 
-            // Registration Form Card
+            // Login Form Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
@@ -160,40 +150,27 @@ fun RegisterScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(28.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                        .padding(32.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    // Back Button and Title
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = onNavigateToLogin) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                        }
-                        Text(
-                            text = "Create Account",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
+                    Text(
+                        text = "Welcome Back!",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Text(
+                        text = "Sign in to continue watching",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    // Full Name Field
-                    OutlinedTextField(
-                        value = fullName,
-                        onValueChange = { fullName = it },
-                        label = { Text("Full Name") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Person, contentDescription = "Full Name")
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp)
-                    )
 
                     // Email Field
                     OutlinedTextField(
@@ -204,20 +181,6 @@ fun RegisterScreen(
                             Icon(Icons.Default.Email, contentDescription = "Email")
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-
-                    // Phone Number Field
-                    OutlinedTextField(
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        label = { Text("Phone Number") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Phone, contentDescription = "Phone")
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         shape = RoundedCornerShape(16.dp)
@@ -238,33 +201,18 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(16.dp)
                     )
 
-                    // Confirm Password Field
-                    OutlinedTextField(
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        label = { Text("Confirm Password") },
-                        leadingIcon = {
-                            Icon(Icons.Default.Lock, contentDescription = "Confirm Password")
-                        },
-                        visualTransformation = PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Register Button
+                    // Login Button
                     Button(
                         onClick = {
-                            if (validateInput(email, password, confirmPassword, fullName, phoneNumber)) {
+                            if (email.isNotBlank() && password.isNotBlank()) {
                                 isLoading = true
-                                registerUser(email, password, fullName, phoneNumber, firebaseAuth, database, context, onRegistrationSuccess) {
+                                loginUser(email, password, firebaseAuth, context, onLoginSuccess) {
                                     isLoading = false
                                 }
                             } else {
-                                Toast.makeText(context, "Please fill all fields correctly", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier
@@ -280,7 +228,7 @@ fun RegisterScreen(
                             )
                         } else {
                             Text(
-                                text = "Create Account",
+                                text = "Sign In",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
                             )
@@ -302,20 +250,20 @@ fun RegisterScreen(
                         Divider(modifier = Modifier.weight(1f))
                     }
 
-                    // Login Link
+                    // Register Link
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Already have an account? ",
+                            text = "Don't have an account? ",
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         TextButton(
-                            onClick = onNavigateToLogin
+                            onClick = onNavigateToRegister
                         ) {
                             Text(
-                                text = "Sign In",
+                                text = "Sign Up",
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
@@ -324,11 +272,11 @@ fun RegisterScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Footer
             Text(
-                text = "HamroTV v1.0 • Welcome to the family!",
+                text = "HamroTV v1.0 • Made with ❤️",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
@@ -337,62 +285,26 @@ fun RegisterScreen(
     }
 }
 
-private fun validateInput(email: String, password: String, confirmPassword: String, fullName: String, phoneNumber: String): Boolean {
-    return email.isNotBlank() &&
-            password.isNotBlank() &&
-            fullName.isNotBlank() &&
-            phoneNumber.isNotBlank() &&
-            password == confirmPassword &&
-            password.length >= 6
-}
-
-private fun registerUser(
+private fun loginUser(
     email: String,
     password: String,
-    fullName: String,
-    phoneNumber: String,
     firebaseAuth: FirebaseAuth,
-    database: FirebaseDatabase,
     context: android.content.Context,
     onSuccess: () -> Unit,
     onComplete: () -> Unit
 ) {
-    Log.d("RegisterActivity", "Starting registration for email: $email")
+    Log.d("LoginActivity", "Starting login for email: $email")
 
-    firebaseAuth.createUserWithEmailAndPassword(email, password)
-        .addOnSuccessListener { authResult ->
-            Log.d("RegisterActivity", "Firebase Auth successful")
-
-            val userId = authResult.user?.uid
-            if (userId != null) {
-                val userData = mapOf(
-                    "userId" to userId,
-                    "email" to email,
-                    "userName" to fullName,
-                    "contact" to phoneNumber
-                )
-
-                database.reference.child("users").child(userId).setValue(userData)
-                    .addOnSuccessListener {
-                        Log.d("RegisterActivity", "User data saved successfully")
-                        onComplete()
-                        Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
-                        onSuccess()
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("RegisterActivity", "Failed to save user data: ${exception.message}")
-                        onComplete()
-                        Toast.makeText(context, "Registration failed: ${exception.message}", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Log.e("RegisterActivity", "User ID is null")
-                onComplete()
-                Toast.makeText(context, "Registration failed: User ID is null", Toast.LENGTH_SHORT).show()
-            }
+    firebaseAuth.signInWithEmailAndPassword(email, password)
+        .addOnSuccessListener {
+            Log.d("LoginActivity", "Login successful")
+            onComplete()
+            Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show()
+            onSuccess()
         }
         .addOnFailureListener { exception ->
-            Log.e("RegisterActivity", "Firebase Auth failed: ${exception.message}")
+            Log.e("LoginActivity", "Login failed: ${exception.message}")
             onComplete()
-            Toast.makeText(context, "Registration failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Login failed: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
 }

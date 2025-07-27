@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.hamrotv.ui.theme.HamroTVTheme
-import com.example.hamrotv.ui.activity.LoginActiivty
+import com.example.hamrotv.ui.activity.LoginActivity
 import com.example.hamrotv.ui.activity.NavigationActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 finish()
             } else {
                 // User not logged in, go to login
-                val intent = Intent(this@MainActivity, LoginActiivty::class.java)
+                val intent = Intent(this@MainActivity, LoginActivity::class.java)
                 startActivity(intent)
                 finish()
             }

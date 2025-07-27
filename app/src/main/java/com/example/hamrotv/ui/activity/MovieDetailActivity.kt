@@ -4,7 +4,6 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,18 +23,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.hamrotv.model.MovieModel
+import com.example.hamrotv.repository.MovieRepositoryImp
 import com.example.hamrotv.ui.theme.HamroTVTheme
 
 class MovieDetailActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Get the MovieModel from the Intent
         val movie = intent.getParcelableExtra<MovieModel>("MOVIE_KEY")
 
         if (movie == null) {
@@ -43,13 +41,6 @@ class MovieDetailActivity : ComponentActivity() {
             finish()
             return
         }
-
-        // Debugging logs
-        Log.d(
-            "MovieDetailActivity",
-            "Movie Id: ${movie.MovieId}, Name: ${movie.MovieName}, Rating: ${movie.Rating}, " +
-                    "Desc: ${movie.description}, Image: ${movie.imageUrl}, Genres: ${movie.genres}"
-        )
 
         setContent {
             HamroTVTheme {
@@ -62,6 +53,12 @@ class MovieDetailActivity : ComponentActivity() {
                         onBackPressed = { finish() },
                         onWatchTrailer = { url ->
                             openYouTubeLink(url)
+                        },
+                        onDelete = { deleteMovie(it) },
+                        onEdit = {
+                            val intent = Intent(this, UpdateMovieActivity::class.java)
+                            intent.putExtra("MOVIE_ID", movie.MovieId)
+                            startActivity(intent)
                         }
                     )
                 }
@@ -79,6 +76,16 @@ class MovieDetailActivity : ComponentActivity() {
             Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun deleteMovie(movieId: String) {
+        val repo = MovieRepositoryImp()
+        repo.deleteMovie(movieId) { success, message ->
+            runOnUiThread {
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                if (success) finish()
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,10 +93,12 @@ class MovieDetailActivity : ComponentActivity() {
 fun MovieDetailScreen(
     movie: MovieModel,
     onBackPressed: () -> Unit,
-    onWatchTrailer: (String) -> Unit
+    onWatchTrailer: (String) -> Unit,
+    onDelete: (String) -> Unit,
+    onEdit: () -> Unit
 ) {
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -114,7 +123,6 @@ fun MovieDetailScreen(
                 .padding(paddingValues)
                 .verticalScroll(scrollState)
         ) {
-            // Movie Image
             AsyncImage(
                 model = movie.imageUrl.ifEmpty { "https://via.placeholder.com/400x600?text=No+Image" },
                 contentDescription = "Movie Poster",
@@ -126,7 +134,6 @@ fun MovieDetailScreen(
                 contentScale = ContentScale.Crop
             )
 
-            // Movie Info Section
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -136,7 +143,6 @@ fun MovieDetailScreen(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    // Movie Title
                     Text(
                         text = movie.MovieName.ifEmpty { "Unnamed Movie" },
                         style = MaterialTheme.typography.headlineMedium,
@@ -145,116 +151,58 @@ fun MovieDetailScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Rating
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Star,
-                            contentDescription = "Rating",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Star, contentDescription = "Rating")
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "${movie.Rating ?: "N/A"}/10",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.titleMedium
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Movie Details Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Release Year
                         Column {
-                            Text(
-                                text = "Year",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = movie.releaseYear.ifEmpty { "N/A" },
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text("Year", style = MaterialTheme.typography.bodySmall)
+                            Text(movie.releaseYear.ifEmpty { "N/A" })
                         }
-
-                        // Duration
                         Column {
-                            Text(
-                                text = "Duration",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = movie.duration.ifEmpty { "N/A" },
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text("Duration", style = MaterialTheme.typography.bodySmall)
+                            Text(movie.duration.ifEmpty { "N/A" })
                         }
-
-                        // Age Rating
                         Column {
-                            Text(
-                                text = "Age Rating",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = movie.ageRating.ifEmpty { "N/A" },
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Text("Age Rating", style = MaterialTheme.typography.bodySmall)
+                            Text(movie.ageRating.ifEmpty { "N/A" })
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Genres
-                    Text(
-                        text = "Genres",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = movie.genres.ifEmpty { "N/A" },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    Text("Genres", style = MaterialTheme.typography.titleSmall)
+                    Text(movie.genres.ifEmpty { "N/A" })
                 }
             }
 
-            // Description Section
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        text = "Description",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Medium
-                    )
-
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Description", style = MaterialTheme.typography.titleMedium)
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Text(
                         text = movie.description.ifEmpty { "No description available" },
-                        style = MaterialTheme.typography.bodyMedium,
-                        lineHeight = 20.sp
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
 
-            // Watch Trailer Button
             Button(
                 onClick = {
                     val trailerUrl = movie.trailerUrl.ifEmpty { "https://www.youtube.com" }
@@ -265,17 +213,34 @@ fun MovieDetailScreen(
                     .padding(16.dp)
                     .height(50.dp)
             ) {
-                Icon(
-                    Icons.Default.PlayArrow,
-                    contentDescription = "Play",
-                    modifier = Modifier.size(20.dp)
-                )
+                Icon(Icons.Default.PlayArrow, contentDescription = "Play")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Watch Trailer",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                Text("Watch Trailer")
+            }
+
+            // Edit & Delete Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = { onEdit() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Edit")
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Button(
+                    onClick = { onDelete(movie.MovieId) },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Delete")
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

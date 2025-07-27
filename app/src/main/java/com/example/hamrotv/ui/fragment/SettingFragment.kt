@@ -14,7 +14,7 @@ import com.example.hamrotv.R
 import com.example.hamrotv.ViewModel.UserViewModel
 import com.example.hamrotv.databinding.FragmentSettingBinding
 import com.example.hamrotv.repository.UserRepositoryImp
-import com.example.hamrotv.ui.activity.LoginActiivty
+import com.example.hamrotv.ui.activity.LoginActivity
 
 class SettingFragment : Fragment() {
     private var _binding: FragmentSettingBinding? = null
@@ -107,7 +107,7 @@ class SettingFragment : Fragment() {
             userViewModel.logout { success, message ->
                 if (success) {
                     Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(requireContext(), LoginActiivty::class.java)
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     requireActivity().finish()

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,16 +24,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.hamrotv.R
 import com.example.hamrotv.ui.theme.HamroTVTheme
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
-class LoginActiivty : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,15 +54,16 @@ class LoginActiivty : ComponentActivity() {
                 ) {
                     LoginScreen(
                         onLoginSuccess = {
-                            val intent = Intent(this@LoginActiivty, NavigationActivity::class.java)
+                            val intent = Intent(this@LoginActivity, NavigationActivity::class.java)
                             startActivity(intent)
                             finish()
                         },
                         onNavigateToRegister = {
-                            val intent = Intent(this@LoginActiivty, RegisterActivity::class.java)
+                            val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
                             startActivity(intent)
                         },
-                        firebaseAuth = firebaseAuth
+                        firebaseAuth = firebaseAuth,
+                        context = this@LoginActivity
                     )
                 }
             }
@@ -69,13 +76,14 @@ class LoginActiivty : ComponentActivity() {
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
-    firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth,
+    context: android.content.Context
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
     val scrollState = rememberScrollState()
 
     Box(
@@ -99,7 +107,6 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App Logo/Title Section
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -141,7 +148,6 @@ fun LoginScreen(
                 }
             }
 
-            // Login Form Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
@@ -172,7 +178,6 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Email Field
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -186,7 +191,6 @@ fun LoginScreen(
                         shape = RoundedCornerShape(16.dp)
                     )
 
-                    // Password Field
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
@@ -194,7 +198,18 @@ fun LoginScreen(
                         leadingIcon = {
                             Icon(Icons.Default.Lock, contentDescription = "Password")
                         },
-                        visualTransformation = PasswordVisualTransformation(),
+                        trailingIcon = {
+                            val iconRes = if (passwordVisible) R.drawable.outline_visibility_24 else R.drawable.baseline_visibility_off_24
+                            val description = if (passwordVisible) "Hide password" else "Show password"
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = description
+                                )
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
@@ -203,7 +218,6 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Login Button
                     Button(
                         onClick = {
                             if (email.isNotBlank() && password.isNotBlank()) {
@@ -235,7 +249,6 @@ fun LoginScreen(
                         }
                     }
 
-                    // Divider
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -250,7 +263,6 @@ fun LoginScreen(
                         Divider(modifier = Modifier.weight(1f))
                     }
 
-                    // Register Link
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
@@ -274,7 +286,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Footer
             Text(
                 text = "HamroTV v1.0 • Made with ❤️",
                 fontSize = 12.sp,
@@ -293,7 +304,7 @@ private fun loginUser(
     onSuccess: () -> Unit,
     onComplete: () -> Unit
 ) {
-    Log.d("LoginActivity", "Starting login for email: $email")
+    Log.d("LoginActivity", "Starting login")
 
     firebaseAuth.signInWithEmailAndPassword(email, password)
         .addOnSuccessListener {
@@ -303,8 +314,12 @@ private fun loginUser(
             onSuccess()
         }
         .addOnFailureListener { exception ->
-            Log.e("LoginActivity", "Login failed: ${exception.message}")
             onComplete()
-            Toast.makeText(context, "Login failed: ${exception.message}", Toast.LENGTH_SHORT).show()
+            val errorMessage = when (exception) {
+                is FirebaseAuthInvalidCredentialsException -> "Invalid email or password"
+                is FirebaseAuthInvalidUserException -> "No account found with this email"
+                else -> "Login failed: ${exception.localizedMessage}"
+            }
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
 }
